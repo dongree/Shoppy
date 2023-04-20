@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AiOutlineShopping, AiOutlineShoppingCart } from 'react-icons/ai';
 import { BsFillPencilFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
+import { loginByGoogle } from '../firebase';
 
 export default function Header() {
   const navigate = useNavigate();
+
+  const [isLogin, setIsLogin] = useState(false);
 
   return (
     <header className="flex justify-between items-center p-4 border-b-2 border-">
@@ -27,22 +30,40 @@ export default function Header() {
           onClick={() => navigate('/cart', {})}
         >
           <AiOutlineShoppingCart className="w-6 h-6" />
-          <div className="w-4 h-4 bg-red-400 absolute top-1 rounded-full flex justify-center text-xs right-1 text-white">
+          <div
+            className={`w-4 h-4 bg-red-400 absolute top-1 rounded-full flex justify-center text-xs right-1 text-white ${
+              isLogin ? '' : 'hidden'
+            }`}
+          >
             0
           </div>
         </div>
 
         <BsFillPencilFill
-          className="mx-2 cursor-pointer w-6 h-6"
+          className={`mx-2 cursor-pointer w-6 h-6 ${isLogin ? '' : 'hidden'}`}
           onClick={() => navigate('/add', {})}
         />
-        <div className="flex mx-2 items-center">
+        <div className={`flex mx-2 items-center ${isLogin ? '' : 'hidden'}`}>
           <img src="logo192.png" alt="profile" className="w-6 h-6 mr-1" />
           <p>User name</p>
         </div>
-        <button className="mx-2 cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md">
-          Logout
-        </button>
+        {isLogin ? (
+          <button
+            className="mx-2 cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md"
+            onClick={() => setIsLogin(false)}
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+            className="mx-2 cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md"
+            onClick={() => {
+              loginByGoogle().then(() => setIsLogin(true));
+            }}
+          >
+            Login
+          </button>
+        )}
       </div>
     </header>
   );
