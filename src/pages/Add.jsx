@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useFirebase } from '../context/firebaseContext';
+import uuid from 'react-uuid';
 
 export default function Add() {
+  const [fileName, setFileName] = useState('');
   const [file, setFile] = useState('');
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -8,8 +11,11 @@ export default function Add() {
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState('');
 
+  const { firebase } = useFirebase();
+
   const init = () => {
     setFile('');
+    setFileName('');
     setName('');
     setPrice('');
     setCategory('');
@@ -20,6 +26,15 @@ export default function Add() {
   const handleSubmit = e => {
     e.preventDefault();
     init();
+    firebase.addItem(
+      uuid(),
+      fileName,
+      name,
+      price,
+      category,
+      description,
+      options
+    );
   };
 
   return (
@@ -32,9 +47,13 @@ export default function Add() {
       >
         <input
           type="file"
-          value={file}
-          onChange={e => setFile(e.target.value)}
+          value={fileName}
+          onChange={e => {
+            // setFile(window.URL.createObjectURL(e.target.files[0]));
+            setFileName(e.target.value);
+          }}
           className="border-2 w-4/5  p-3 mb-1"
+          required
         />
         <input
           type="text"
@@ -42,6 +61,7 @@ export default function Add() {
           onChange={e => setName(e.target.value)}
           placeholder="제품명"
           className="border-2 w-4/5  p-3 mb-1"
+          required
         />
         <input
           type="text"
@@ -49,6 +69,7 @@ export default function Add() {
           onChange={e => setPrice(e.target.value)}
           placeholder="가격"
           className="border-2 w-4/5  p-3 mb-1"
+          required
         />
         <input
           type="text"
@@ -56,6 +77,7 @@ export default function Add() {
           onChange={e => setCategory(e.target.value)}
           placeholder="카테고리"
           className="border-2 w-4/5  p-3 mb-1"
+          required
         />
         <input
           type="text"
@@ -63,6 +85,7 @@ export default function Add() {
           onChange={e => setDescription(e.target.value)}
           placeholder="제품 설명"
           className="border-2 w-4/5  p-3 mb-1"
+          required
         />
         <input
           type="text"

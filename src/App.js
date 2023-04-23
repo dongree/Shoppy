@@ -1,11 +1,14 @@
 import { Outlet } from 'react-router-dom';
 import Header from './components/Header';
+import { FirebaseProvider } from './context/firebaseContext';
 
 function App() {
   return (
     <>
-      <Header />
-      <Outlet />
+      <FirebaseProvider>
+        <Header />
+        <Outlet />
+      </FirebaseProvider>
     </>
   );
 }

@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { AiOutlineShopping, AiOutlineShoppingCart } from 'react-icons/ai';
 import { BsFillPencilFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
-import { loginByGoogle, logout } from '../firebase';
+import { loginByGoogle, logout } from '../api/firebase';
+import { useFirebase } from '../context/firebaseContext';
 
 export default function Header() {
   const navigate = useNavigate();
 
   const [isLogin, setIsLogin] = useState(false);
   const [username, setUsername] = useState('');
+  const { firebase } = useFirebase();
 
   return (
     <header className="flex justify-between items-center p-4 border-b-2 border-">
@@ -51,7 +53,7 @@ export default function Header() {
         {isLogin ? (
           <button
             className="mx-2 cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md"
-            onClick={() => logout().then(() => setIsLogin(false))}
+            onClick={() => firebase.logout().then(() => setIsLogin(false))}
           >
             Logout
           </button>
@@ -59,7 +61,8 @@ export default function Header() {
           <button
             className="mx-2 cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md"
             onClick={() => {
-              loginByGoogle().then(user => {
+              firebase.loginByGoogle().then(user => {
+                setUsername(user.displayName);
                 setIsLogin(true);
               });
             }}

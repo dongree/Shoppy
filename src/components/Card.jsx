@@ -14,7 +14,7 @@ export default function Card({ info }) {
         <p>{info.name}</p>
         <p>₩{info.price}</p>
       </div>
-      <p className="text-xs text-gray-500">{info.type}</p>
+      <p className="text-xs text-gray-500">{info.category}</p>
     </div>
   );
 }

@@ -3,11 +3,11 @@ import { useLocation } from 'react-router-dom';
 
 export default function Detail() {
   const location = useLocation();
-  const { img, name, price, type, description } = location.state.info;
+  const { img, name, price, category, description } = location.state.info;
 
   return (
     <div>
-      <p className="m-3">{`>${type}`}</p>
+      <p className="m-3">{`>${category}`}</p>
       <div className="flex w-full">
         <div className="basis-1/2">
           <img src={img} alt="cloth" />
