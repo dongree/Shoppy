@@ -1,6 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+} from 'firebase/auth';
 
 // TODO: Replace the following with your app's Firebase project configuration
 const firebaseConfig = {
@@ -34,6 +39,7 @@ export const loginByGoogle = () =>
       // ...
       // console.log(token);
       // console.log(user);
+      return user;
     })
     .catch(error => {
       // Handle Errors here.
@@ -44,4 +50,14 @@ export const loginByGoogle = () =>
       // The AuthCredential type that was used.
       const credential = GoogleAuthProvider.credentialFromError(error);
       // ...
+    });
+
+export const logout = () =>
+  signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      console.log('logout');
+    })
+    .catch(error => {
+      // An error happened.
     });
