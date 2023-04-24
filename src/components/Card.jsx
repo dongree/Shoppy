@@ -9,7 +9,7 @@ export default function Card({ info }) {
       className="cursor-pointer duration-200 ease-in-out hover:scale-105"
       onClick={() => navigate(`/products/${info.id}`, { state: { info } })}
     >
-      <img src={info.img} alt="cloth" />
+      <img src={info.fileUrl} alt="cloth" />
       <div className="flex justify-between text-sm mb-1">
         <p>{info.name}</p>
         <p>₩{info.price}</p>

@@ -23,18 +23,35 @@ export default function Add() {
     setOptions('');
   };
 
+  const url = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`;
+
   const handleSubmit = e => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'igh0wg24');
+
+    fetch(url, {
+      method: 'POST',
+      body: formData,
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        const json = JSON.parse(data);
+        firebase.addItem(
+          uuid(),
+          json.secure_url,
+          name,
+          price,
+          category,
+          description,
+          options
+        );
+      });
+
     init();
-    firebase.addItem(
-      uuid(),
-      fileName,
-      name,
-      price,
-      category,
-      description,
-      options
-    );
   };
 
   return (
@@ -49,7 +66,7 @@ export default function Add() {
           type="file"
           value={fileName}
           onChange={e => {
-            // setFile(window.URL.createObjectURL(e.target.files[0]));
+            setFile(e.target.files[0]);
             setFileName(e.target.value);
           }}
           className="border-2 w-4/5  p-3 mb-1"
