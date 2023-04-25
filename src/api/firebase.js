@@ -1,12 +1,13 @@
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
 import {
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
+  setPersistence,
+  browserSessionPersistence,
 } from 'firebase/auth';
-import { get, getDatabase, onValue, ref, set } from 'firebase/database';
+import { get, getDatabase, ref, set } from 'firebase/database';
 
 export default class Firebase {
   constructor() {
@@ -27,29 +28,31 @@ export default class Firebase {
   }
 
   loginByGoogle = () =>
-    signInWithPopup(this.auth, this.provider)
-      .then(result => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // const credential = GoogleAuthProvider.credentialFromResult(result);
-        // const token = credential.accessToken;
-        // The signed-in user info.
-        // const user = result.user;
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
-        // console.log(token);
-        // console.log(user);
-        return result.user;
-      })
-      .catch(error => {
-        // Handle Errors here.
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        // The email of the user's account used.
-        // const email = error.customData.email;
-        // The AuthCredential type that was used.
-        // const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
+    setPersistence(this.auth, browserSessionPersistence).then(() =>
+      signInWithPopup(this.auth, this.provider)
+        .then(result => {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          // const credential = GoogleAuthProvider.credentialFromResult(result);
+          // const token = credential.accessToken;
+          // The signed-in user info.
+          // const user = result.user;
+          // IdP data available using getAdditionalUserInfo(result)
+          // ...
+          // console.log(token);
+          // console.log(user);
+          return result.user;
+        })
+        .catch(error => {
+          // Handle Errors here.
+          // const errorCode = error.code;
+          // const errorMessage = error.message;
+          // The email of the user's account used.
+          // const email = error.customData.email;
+          // The AuthCredential type that was used.
+          // const credential = GoogleAuthProvider.credentialFromError(error);
+          // ...
+        })
+    );
 
   logout = () =>
     signOut(this.auth)
@@ -76,5 +79,38 @@ export default class Firebase {
   getItems = () =>
     get(ref(this.db, 'clothes')).then(snapshot =>
       Object.values(snapshot.val())
+    );
+
+  addCartItemByUser = (
+    userId,
+    id,
+    fileUrl,
+    name,
+    price,
+    category,
+    description,
+    options,
+    size
+  ) => {
+    set(ref(this.db, `carts/${userId}/${id}`), {
+      id,
+      fileUrl,
+      name,
+      price,
+      category,
+      description,
+      options,
+      size,
+    });
+  };
+
+  getCartItems = userId =>
+    get(ref(this.db, `carts/${userId}`)).then(snapshot =>
+      Object.values(snapshot.val())
+    );
+
+  getCartItemsNum = userId =>
+    get(ref(this.db, `carts/${userId}`)).then(
+      snapshot => Object.keys(snapshot.val()).length
     );
 }

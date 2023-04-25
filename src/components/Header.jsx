@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiOutlineShopping, AiOutlineShoppingCart } from 'react-icons/ai';
 import { BsFillPencilFill } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
-import { loginByGoogle, logout } from '../api/firebase';
 import { useFirebase } from '../context/firebaseContext';
 
 export default function Header() {
@@ -10,7 +9,23 @@ export default function Header() {
 
   const [isLogin, setIsLogin] = useState(false);
   const [username, setUsername] = useState('');
+  const [cartItemNums, setCartItemNums] = useState(0);
   const { firebase } = useFirebase();
+
+  useEffect(() => {
+    if (sessionStorage.length !== 0) setIsLogin(true);
+  }, []);
+
+  useEffect(() => {
+    if (sessionStorage.length !== 0) {
+      const uid = JSON.parse(
+        sessionStorage.getItem(
+          `firebase:authUser:${process.env.REACT_APP_FIREBASE_API_KEY}:[DEFAULT]`
+        )
+      ).uid;
+      firebase.getCartItemsNum(uid).then(nums => setCartItemNums(nums));
+    }
+  });
 
   return (
     <header className="flex justify-between items-center p-4 border-b-2 border-">
@@ -38,7 +53,7 @@ export default function Header() {
               isLogin ? '' : 'hidden'
             }`}
           >
-            0
+            {cartItemNums}
           </div>
         </div>
 
@@ -62,6 +77,7 @@ export default function Header() {
             className="mx-2 cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md"
             onClick={() => {
               firebase.loginByGoogle().then(user => {
+                console.log(user);
                 setUsername(user.displayName);
                 setIsLogin(true);
               });

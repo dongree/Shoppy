@@ -6,7 +6,7 @@ export default function Add() {
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState('');
   const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState(0);
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState('');
@@ -81,9 +81,9 @@ export default function Add() {
           required
         />
         <input
-          type="text"
+          type="number"
           value={price}
-          onChange={e => setPrice(e.target.value)}
+          onChange={e => setPrice(Number(e.target.value))}
           placeholder="가격"
           className="border-2 w-4/5  p-3 mb-1"
           required

@@ -3,30 +3,21 @@ import CartCard from '../components/CartCard';
 import { AiFillPlusCircle } from 'react-icons/ai';
 import { FaEquals } from 'react-icons/fa';
 import PriceBox from '../components/PriceBox';
+import { useFirebase } from '../context/firebaseContext';
 
 export default function Cart() {
+  const [data, setData] = useState([]);
   const [priceSum, setPriceSum] = useState();
+  const { firebase } = useFirebase();
 
-  const data = [
-    {
-      id: 1,
-      fileUrl: '/img/1.webp',
-      name: '원피스',
-      price: 50000,
-      category: '여성',
-      description: '예쁜 옷',
-      size: 'M',
-    },
-    {
-      id: 2,
-      fileUrl: '/img/1.webp',
-      name: '원피스',
-      price: 50000,
-      category: '여성',
-      description: '예쁜 옷',
-      size: 'M',
-    },
-  ];
+  useEffect(() => {
+    const uid = JSON.parse(
+      sessionStorage.getItem(
+        `firebase:authUser:${process.env.REACT_APP_FIREBASE_API_KEY}:[DEFAULT]`
+      )
+    ).uid;
+    firebase.getCartItems(uid).then(d => setData(d));
+  }, []);
 
   useEffect(() => {
     let result = 0;
