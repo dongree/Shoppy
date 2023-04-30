@@ -7,7 +7,7 @@ import {
   setPersistence,
   browserSessionPersistence,
 } from 'firebase/auth';
-import { get, getDatabase, ref, set } from 'firebase/database';
+import { get, getDatabase, ref, remove, set } from 'firebase/database';
 
 export default class Firebase {
   constructor() {
@@ -113,4 +113,8 @@ export default class Firebase {
     get(ref(this.db, `carts/${userId}`)).then(
       snapshot => Object.keys(snapshot.val()).length
     );
+
+  removeCartItem = (userId, id) => {
+    remove(ref(this.db, `carts/${userId}/${id}`));
+  };
 }

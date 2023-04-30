@@ -1,8 +1,19 @@
 import React from 'react';
 import { BsFillTrashFill } from 'react-icons/bs';
 import { AiOutlinePlusSquare, AiOutlineMinusSquare } from 'react-icons/ai';
+import { useFirebase } from '../context/firebaseContext';
 
 export default function CartCard({ item }) {
+  const { firebase } = useFirebase();
+
+  const handleRemove = () => {
+    const uid = JSON.parse(
+      sessionStorage.getItem(
+        `firebase:authUser:${process.env.REACT_APP_FIREBASE_API_KEY}:[DEFAULT]`
+      )
+    ).uid;
+    firebase.removeCartItem(uid, item.id);
+  };
   return (
     <li className="flex m-1">
       <div className=" basis-1/6 ">
@@ -18,7 +29,10 @@ export default function CartCard({ item }) {
           <AiOutlineMinusSquare className="cursor-pointer" />
           <p className="mx-2">1</p>
           <AiOutlinePlusSquare className="cursor-pointer" />
-          <BsFillTrashFill className="cursor-pointer mx-2" />
+          <BsFillTrashFill
+            className="cursor-pointer mx-2"
+            onClick={() => handleRemove()}
+          />
         </div>
       </div>
     </li>
