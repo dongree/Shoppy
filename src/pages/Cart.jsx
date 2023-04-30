@@ -3,20 +3,14 @@ import CartCard from '../components/CartCard';
 import { AiFillPlusCircle } from 'react-icons/ai';
 import { FaEquals } from 'react-icons/fa';
 import PriceBox from '../components/PriceBox';
-import { useFirebase } from '../context/firebaseContext';
+import { getCartItems, onUserStateChange } from '../api/firebase';
 
 export default function Cart() {
   const [data, setData] = useState([]);
   const [priceSum, setPriceSum] = useState();
-  const { firebase } = useFirebase();
 
   useEffect(() => {
-    const uid = JSON.parse(
-      sessionStorage.getItem(
-        `firebase:authUser:${process.env.REACT_APP_FIREBASE_API_KEY}:[DEFAULT]`
-      )
-    ).uid;
-    firebase.getCartItems(uid).then(d => setData(d));
+    onUserStateChange(user => getCartItems(user.uid).then(d => setData(d)));
   }, []);
 
   useEffect(() => {

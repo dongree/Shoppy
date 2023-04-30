@@ -1,26 +1,19 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useFirebase } from '../context/firebaseContext';
+import { addCartItemByUser, onUserStateChange } from '../api/firebase';
 
 export default function Detail() {
   const location = useLocation();
   const info = location.state.info;
   const { id, fileUrl, name, price, category, description, options } = info;
-  const { firebase } = useFirebase();
   const [size, setSize] = useState();
   const [isAdd, setIsAdd] = useState(false);
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (sessionStorage.length !== 0) {
-      const uid = JSON.parse(
-        sessionStorage.getItem(
-          `firebase:authUser:${process.env.REACT_APP_FIREBASE_API_KEY}:[DEFAULT]`
-        )
-      ).uid;
-
-      firebase.addCartItemByUser(
-        uid,
+    onUserStateChange(user =>
+      addCartItemByUser(
+        user.uid,
         id + size,
         fileUrl,
         name,
@@ -29,9 +22,8 @@ export default function Detail() {
         description,
         options,
         size
-      );
-    }
-
+      )
+    );
     setIsAdd(true);
   };
 

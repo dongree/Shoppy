@@ -1,18 +1,13 @@
 import React from 'react';
 import { BsFillTrashFill } from 'react-icons/bs';
 import { AiOutlinePlusSquare, AiOutlineMinusSquare } from 'react-icons/ai';
-import { useFirebase } from '../context/firebaseContext';
+import { onUserStateChange, removeCartItem } from '../api/firebase';
 
 export default function CartCard({ item }) {
-  const { firebase } = useFirebase();
-
   const handleRemove = () => {
-    const uid = JSON.parse(
-      sessionStorage.getItem(
-        `firebase:authUser:${process.env.REACT_APP_FIREBASE_API_KEY}:[DEFAULT]`
-      )
-    ).uid;
-    firebase.removeCartItem(uid, item.id);
+    onUserStateChange(user => {
+      removeCartItem(user.uid, item.id);
+    });
   };
   return (
     <li className="flex m-1">

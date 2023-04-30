@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Card from '../components/Card';
-import { useFirebase } from '../context/firebaseContext';
+import { getItems } from '../api/firebase';
 
 export default function Products() {
   const [data, setData] = useState([]);
-  const { firebase } = useFirebase();
 
   useEffect(() => {
-    firebase.getItems().then(d => setData(d));
+    getItems().then(d => setData(d));
   }, []);
 
   return (

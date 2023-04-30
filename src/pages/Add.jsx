@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useFirebase } from '../context/firebaseContext';
 import uuid from 'react-uuid';
+import { addItem } from '../api/firebase';
 
 export default function Add() {
   const [fileName, setFileName] = useState('');
@@ -10,8 +10,6 @@ export default function Add() {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [options, setOptions] = useState('');
-
-  const { firebase } = useFirebase();
 
   const init = () => {
     setFile('');
@@ -40,7 +38,7 @@ export default function Add() {
       })
       .then(data => {
         const json = JSON.parse(data);
-        firebase.addItem(
+        addItem(
           uuid(),
           json.secure_url,
           name,
