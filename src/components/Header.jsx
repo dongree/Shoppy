@@ -2,22 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { AiOutlineShopping, AiOutlineShoppingCart } from 'react-icons/ai';
 import { BsFillPencilFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
-import {
-  getCartItemsNum,
-  login,
-  logout,
-  onUserStateChange,
-} from '../api/firebase';
+import { getCartItemsNum, onUserStateChange } from '../api/firebase';
 import User from './User';
+import Button from './ui/Button';
+import { useAuthContext } from './context/AuthContext';
 
 export default function Header() {
-  const [user, setUser] = useState();
+  const { user, login, logout } = useAuthContext();
   const [cartItemNums, setCartItemNums] = useState(0);
 
   useEffect(() => {
     onUserStateChange(user => {
-      setUser(user);
-      getCartItemsNum(user.uid).then(nums => setCartItemNums(nums));
+      if (user) {
+        getCartItemsNum(user.uid).then(nums => setCartItemNums(nums));
+      }
     });
   }, []);
 
@@ -34,39 +32,31 @@ export default function Header() {
         <Link to="/products" className=" cursor-pointer">
           Products
         </Link>
-        <Link to="/cart" className="relative py-2 pr-2 cursor-pointer ">
-          <AiOutlineShoppingCart className="w-6 h-6" />
-          <div
-            className={`w-4 h-4 bg-red-400 absolute top-1 rounded-full flex justify-center text-xs right-1 text-white ${
-              user ? '' : 'hidden'
-            }`}
+        {user && (
+          <Link to="/cart" className="relative py-2 pr-2 cursor-pointer ">
+            <AiOutlineShoppingCart className="w-6 h-6" />
+            <div
+              className={`w-4 h-4 bg-red-400 absolute top-1 rounded-full flex justify-center text-xs right-1 text-white }`}
+            >
+              {cartItemNums}
+            </div>
+          </Link>
+        )}
+
+        {user && user.isAdmin && (
+          <Link
+            to="/add"
+            className={`flex items-center justify-center cursor-pointer w-6 h-6 `}
           >
-            {cartItemNums}
-          </div>
-        </Link>
-        <Link
-          to="/add"
-          className={`flex items-center justify-center cursor-pointer w-6 h-6 ${
-            user ? '' : 'hidden'
-          }`}
-        >
-          <BsFillPencilFill />
-        </Link>
+            <BsFillPencilFill />
+          </Link>
+        )}
+
         {user && <User user={user} />}
         {user ? (
-          <button
-            className=" cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md"
-            onClick={logout}
-          >
-            Logout
-          </button>
+          <Button text={'logout'} onClick={logout} />
         ) : (
-          <button
-            className=" cursor-pointer bg-red-400 text-white px-3 py-1 text-lg rounded-md"
-            onClick={login}
-          >
-            Login
-          </button>
+          <Button text={'login'} onClick={login} />
         )}
       </nav>
     </header>

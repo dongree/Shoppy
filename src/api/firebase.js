@@ -28,9 +28,22 @@ export function logout() {
 }
 
 export function onUserStateChange(callback) {
-  onAuthStateChanged(auth, user => {
-    callback(user);
+  onAuthStateChanged(auth, async user => {
+    const updatedUser = user ? await adminUser(user) : null;
+    callback(updatedUser);
   });
+}
+
+export async function adminUser(user) {
+  return get(ref(db, 'admins')) //
+    .then(snapshot => {
+      if (snapshot.exists()) {
+        const admins = snapshot.val();
+        const isAdmin = admins.includes(user.uid);
+        return { ...user, isAdmin };
+      }
+      return user;
+    });
 }
 
 export async function addItem(
