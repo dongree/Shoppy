@@ -7,6 +7,7 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import { get, getDatabase, ref, remove, set } from 'firebase/database';
+import uuid from 'react-uuid';
 
 const app = initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -46,23 +47,14 @@ export async function adminUser(user) {
     });
 }
 
-export async function addItem(
-  id,
-  fileUrl,
-  name,
-  price,
-  category,
-  description,
-  options
-) {
-  set(ref(db, 'clothes/' + id), {
+export async function addItem(product, fileUrl) {
+  const id = uuid();
+  return set(ref(db, `clothes/${id}`), {
+    ...product,
     id,
+    price: parseInt(product.price),
     fileUrl,
-    name,
-    price,
-    category,
-    description,
-    options,
+    options: product.options.split(','),
   });
 }
 

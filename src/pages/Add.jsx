@@ -1,118 +1,111 @@
 import React, { useState } from 'react';
-import uuid from 'react-uuid';
 import { addItem } from '../api/firebase';
+import Button from '../components/ui/Button';
+import { uploadimage } from '../api/uploader';
 
 export default function Add() {
-  const [fileName, setFileName] = useState('');
   const [file, setFile] = useState('');
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState(0);
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-  const [options, setOptions] = useState('');
+  const [product, setProduct] = useState({});
+  const [isUploading, setIsUploading] = useState(false);
+  const [success, setSuccess] = useState();
 
-  const init = () => {
-    setFile('');
-    setFileName('');
-    setName('');
-    setPrice('');
-    setCategory('');
-    setDescription('');
-    setOptions('');
+  const handleChange = e => {
+    const { name, value, files } = e.target;
+    if (name === 'file') {
+      setFile(files && files[0]);
+      return;
+    }
+    setProduct(product => ({ ...product, [name]: value }));
   };
-
-  const url = `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`;
 
   const handleSubmit = e => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', 'igh0wg24');
-
-    fetch(url, {
-      method: 'POST',
-      body: formData,
-    })
-      .then(response => {
-        return response.text();
+    setIsUploading(true);
+    uploadimage(file) //
+      .then(url => {
+        console.log(url);
+        addItem(product, url) //
+          .then(() => {
+            setSuccess('성공적으로 제품이 추가되었습니다.');
+            setTimeout(() => {
+              setSuccess(null);
+            }, 4000);
+          });
       })
-      .then(data => {
-        const json = JSON.parse(data);
-        addItem(
-          uuid(),
-          json.secure_url,
-          name,
-          price,
-          category,
-          description,
-          options
-        );
-      });
-
-    init();
+      .then(() => {
+        setProduct([]);
+        setFile('');
+      })
+      .finally(() => setIsUploading(false));
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="text-2xl font-semibold my-3">새로운 제품 등록</div>
+    <section className="flex flex-col items-center">
+      <h2 className="text-2xl font-semibold my-3">새로운 제품 등록</h2>
+      {success && <p className="my-2">✅{success}</p>}
+      {file && (
+        <img
+          src={window.URL.createObjectURL(file)}
+          alt="local file"
+          className="w-2/5"
+        />
+      )}
       <form
-        action=""
         className="flex flex-col w-full items-center"
         onSubmit={handleSubmit}
       >
         <input
           type="file"
-          value={fileName}
-          onChange={e => {
-            setFile(e.target.files[0]);
-            setFileName(e.target.value);
-          }}
-          className="border-2 w-4/5  p-3 mb-1"
+          accept="image/*"
+          name="file"
+          onChange={handleChange}
           required
         />
         <input
           type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
+          name="name"
+          value={product.name ?? ''}
+          onChange={handleChange}
           placeholder="제품명"
-          className="border-2 w-4/5  p-3 mb-1"
           required
         />
         <input
           type="number"
-          value={price}
-          onChange={e => setPrice(Number(e.target.value))}
+          name="price"
+          value={product.price ?? ''}
+          onChange={handleChange}
           placeholder="가격"
-          className="border-2 w-4/5  p-3 mb-1"
           required
         />
         <input
           type="text"
-          value={category}
-          onChange={e => setCategory(e.target.value)}
+          name="category"
+          value={product.category ?? ''}
+          onChange={handleChange}
           placeholder="카테고리"
-          className="border-2 w-4/5  p-3 mb-1"
           required
         />
         <input
           type="text"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
+          name="description"
+          value={product.description ?? ''}
+          onChange={handleChange}
           placeholder="제품 설명"
-          className="border-2 w-4/5  p-3 mb-1"
           required
         />
         <input
           type="text"
-          value={options}
-          onChange={e => setOptions(e.target.value)}
+          name="options"
+          value={product.options ?? ''}
+          onChange={handleChange}
           placeholder="옵션들(콤마(,)로 구분)"
-          className="border-2 w-4/5  p-3 mb-1"
+          required
         />
-        <button className="bg-red-400 w-9/12 text-xl text-white font-semibold my-4 p-1 ">
-          제품 등록하기
-        </button>
+        <Button
+          text={isUploading ? '업로드중...' : '제품 등록하기'}
+          disabled={isUploading}
+        />
       </form>
-    </div>
+    </section>
   );
 }

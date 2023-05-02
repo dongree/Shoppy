@@ -24,3 +24,7 @@ code {
 * {
   box-sizing: border-box;
 }
+
+input {
+  @apply border-2 w-4/5  p-3 mb-1 outline-none;
+}
