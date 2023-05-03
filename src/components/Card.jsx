@@ -9,7 +9,7 @@ export default function Card({
 
   return (
     <li
-      className="cursor-pointer duration-200 ease-in-out hover:scale-105 rounded-lg shadow-md overflow-hidden"
+      className="cursor-pointer transition-all hover:scale-105 rounded-lg shadow-md overflow-hidden"
       onClick={() => navigate(`/products/${id}`, { state: { info } })}
     >
       <img src={fileUrl} alt="cloth" />
