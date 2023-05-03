@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
-import Products from './pages/Products';
+import AllProducts from './pages/AllProducts';
 import Detail from './pages/Detail';
 import Cart from './pages/Cart';
 import Add from './pages/Add';
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       { index: true, element: <Home /> },
-      { path: 'products', element: <Products /> },
+      { path: 'products', element: <AllProducts /> },
       { path: 'products/:id', element: <Detail /> },
       {
         path: 'cart',

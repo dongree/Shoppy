@@ -59,9 +59,12 @@ export async function addItem(product, fileUrl) {
 }
 
 export async function getItems() {
-  return get(ref(db, 'clothes')).then(snapshot =>
-    Object.values(snapshot.val())
-  );
+  return get(ref(db, 'clothes')).then(snapshot => {
+    if (snapshot.exists()) {
+      return Object.values(snapshot.val());
+    }
+    return [];
+  });
 }
 
 export async function addCartItemByUser(
